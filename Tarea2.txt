@@ -1,0 +1,84 @@
+/*
+Gestión de bases de datos
+TAREA 2: Consultas de datos básicas utilizando SQL
+AIDA MONTALAR
+*/
+
+/*1*/
+SELECT nombre,plazas FROM modelo;
+
+/*2*/
+SELECT DISTINCT provincia FROM persona ORDER BY 1;
+
+/*3*/
+SELECT * FROM persona WHERE provincia='CORDOBA' ORDER BY apellidos,nombre;
+
+/*4*/
+SELECT matricula,propietario FROM vehiculo WHERE modelo=10007 ORDER BY 2;
+
+/*5*/
+SELECT DISTINCT alta,baja FROM vehiculo WHERE matricula<'0050AAA' ORDER BY 1,2;
+
+/*6*/
+SELECT nombre FROM fabricante WHERE provincia BETWEEN 'ALAVA' AND 'BARCELONA';
+
+/*7*/
+SELECT DISTINCT fabricante,plazas FROM modelo
+WHERE fabricante IN ('B22222222','B66666666','B88888888');
+
+/*8*/
+SELECT DISTINCT provincia FROM persona WHERE provincia LIKE '%T%L%';
+
+/*9*/
+SELECT DISTINCT nombre FROM persona
+WHERE nombre LIKE 'MARIA' OR nombre LIKE 'MARIA %' OR nombre LIKE '% MARIA';
+
+/*10*/
+SELECT matricula,alta FROM vehiculo WHERE baja IS NULL;
+
+/*11*/
+SELECT DISTINCT alta FROM vehiculo WHERE baja IS NOT NULL ORDER BY 1;
+
+/*12*/
+SELECT nombre FROM modelo UNION SELECT nombre FROM fabricante ORDER BY 1;
+
+/*13*/
+SELECT provincia FROM persona MINUS SELECT provincia FROM fabricante ORDER BY 1;
+
+/*14*/
+SELECT fabricante.nombre,modelo.nombre FROM fabricante,modelo
+WHERE fabricante=cif AND plazas=2;
+
+/*15*/
+SELECT DISTINCT modelo.nombre FROM modelo,persona
+WHERE provincia=modelo.nombre;
+
+/*16*/
+SELECT matricula,plazas,persona.nombre,apellidos,provincia
+FROM vehiculo,modelo,persona
+WHERE modelo=codigo AND propietario=nif AND provincia LIKE '%AL%' ORDER BY 5,1;
+
+/*17*/
+SELECT matricula,fabricante.nombre,modelo.nombre
+FROM vehiculo,modelo,fabricante
+WHERE modelo=codigo AND fabricante=cif
+AND plazas<=4 AND baja IS NOT NULL AND provincia IN ('AVILA','NAVARRA');
+
+/*18*/
+SELECT DISTINCT persona.nombre,apellidos
+FROM persona,vehiculo,fabricante
+WHERE nif=propietario AND baja IS NULL
+AND fabricante.nombre='RENAULT' AND persona.provincia=fabricante.provincia;
+
+/*19*/
+SELECT persona.nombre,persona.apellidos
+FROM persona,persona p
+WHERE p.nif='12466007G' AND p.provincia=persona.provincia
+AND persona.nif<>p.nif;
+
+/*20*/
+SELECT DISTINCT persona.nombre,apellidos,persona.provincia
+FROM persona,vehiculo,modelo,fabricante
+WHERE nif=propietario AND codigo=modelo AND fabricante=cif
+AND fabricante.provincia=persona.provincia AND baja IS NULL
+ORDER BY 3 DESC,2,1;

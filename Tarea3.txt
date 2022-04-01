@@ -1,0 +1,140 @@
+/*Tarea 3 - AIDA*/
+
+/*1*/
+select min(nombre),max(nombre),min(apellidos),max(apellidos)
+from persona;
+
+/*2*/
+select count(*) from modelo where plazas=2;
+
+/*3*/
+select count(*) from vehiculo where baja is null;
+
+/*4*/
+select sum(plazas) from modelo,vehiculo
+where modelo=codigo
+and baja is not null;
+
+/*5*/
+select count(distinct provincia)
+from persona,vehiculo,modelo
+where nif=propietario and modelo=codigo
+and plazas=2;
+
+/*6*/
+select count(*) from vehiculo,persona
+where propietario=nif and
+baja is null and 
+provincia in('MADRID','BARCELONA','VALENCIA');
+
+/*7*/
+select provincia,count(*)
+from persona
+where provincia in
+(select provincia from fabricante)
+group by provincia
+order by 2 desc,1;
+
+/*8*/
+select fabricante.nombre, modelo.nombre,count(*)
+from fabricante,modelo,vehiculo
+where modelo=codigo and fabricante=cif and baja is not null
+group by fabricante.nombre, modelo.nombre
+order by 3 desc;
+
+/*9*/
+select fabricante.nombre, modelo.nombre,count(*)
+from modelo,fabricante,vehiculo
+where fabricante=cif and modelo=codigo 
+group by fabricante.nombre, modelo.nombre
+having sum(plazas)>1200
+order by 3 desc;
+
+/*10*/
+select persona.nombre,apellidos,fabricante.nombre,count(*)
+from fabricante join modelo on (fabricante=cif)
+join vehiculo on (modelo=codigo)
+join persona on (propietario=nif)
+group by persona.nombre,apellidos,fabricante.nombre
+having count(*)>5;
+
+/*11*/
+select nombre,apellidos from persona
+where provincia=(select provincia
+from persona where nif='12413000J')
+and nif<>'12413000J';
+
+/*12*/
+select * from persona
+where nif not in
+(select propietario from vehiculo);
+
+/*13*/
+select * from persona
+where nif in
+(select propietario from vehiculo
+group by propietario
+having count(propietario)=count(baja));
+
+/*14*/
+select distinct fabricante.nombre,modelo.nombre,persona.provincia
+from fabricante,modelo,vehiculo,persona
+where fabricante=cif and modelo=codigo and propietario=nif
+group by fabricante.nombre,modelo.nombre,persona.provincia
+having count(*)=count(baja);
+
+/*15*/
+select fabricante.nombre
+from fabricante,modelo,vehiculo
+where modelo=codigo and fabricante=cif
+group by fabricante.nombre
+having count(matricula)<(select count(*)
+from fabricante,modelo,vehiculo
+where modelo=codigo and fabricante=cif
+and fabricante.nombre='SEAT');
+
+/*16*/
+select persona.nombre,apellidos
+from fabricante join modelo on (fabricante=cif)
+join vehiculo on (modelo=codigo)
+join persona on (propietario=nif)
+group by persona.nombre,apellidos
+having count(distinct cif)=(select count(cif) from fabricante);
+
+/*17*/
+select nif,apellidos, persona.nombre,persona.provincia
+from persona,vehiculo,modelo,fabricante
+where nif=propietario and modelo=codigo and fabricante=cif
+group by nif,apellidos, persona.nombre,persona.provincia
+having count(matricula)>1 
+and count(distinct cif)=1;
+
+/*18*/
+select provincia
+from persona
+group by provincia
+having count(*)=(select min(count(*))
+from persona group by provincia);
+
+/*19*/
+select fabricante.nombre,count(*)
+from fabricante, modelo,vehiculo
+where cif=fabricante and modelo=codigo
+group by fabricante.nombre
+having sum(plazas)=(select max(sum(plazas))
+from fabricante, modelo,vehiculo
+where cif=fabricante and modelo=codigo
+group by cif);
+
+/*20*/
+select fabricante.nombre,mod_provin.nombre,count(*)
+from (select modelo.nombre,provincia
+from modelo,vehiculo,persona
+where modelo=codigo and propietario=nif
+group by modelo.nombre,provincia)  mod_provin
+join modelo on(mod_provin.nombre=modelo.nombre)
+join fabricante on (fabricante=cif)
+group by fabricante.nombre,mod_provin.nombre
+having count(*)=(select min(count(*)) from (select modelo.nombre,provincia
+from modelo,vehiculo,persona where modelo=codigo and propietario=nif
+group by modelo.nombre,provincia) group by nombre);
